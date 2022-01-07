@@ -20,6 +20,27 @@ class User(db.Model):
         self.role = role
 
 
+class User_info(db.Model):
+    username = db.Column(db.String(120), unique=True, nullable=False, primary_key=True)
+    role = db.Column(db.String(50), nullable=False)
+    firstname = db.Column(db.String(50))
+    lastname = db.Column(db.String(50))
+    dob = db.Column(db.String(50))
+    sex = db.Column(db.String(50))
+    bloodgroup = db.Column(db.String(50))
+    contactno = db.Column(db.String(50))
+    city = db.Column(db.String(50))
+
+    def __init__(self, username, role, firstname, lastname, dob, sex, bloodgroup, contactno, city):
+        self.username = username
+        self.role = role
+        self.firstname = firstname
+        self.lastname = lastname
+        self.dob = dob
+        self.sex = sex
+        self.bloodgroup = bloodgroup
+        self.contactno = contactno
+        self.city = city
 #@app.before_request
 #def require_login():
 #    allowed_route = ['login', 'register', 'static', '']
@@ -36,15 +57,16 @@ def home():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    role = request.form.get('role')
+    role = "Doctor"#request.form.get('role')
     user = User.query.filter_by(username=username, role=role).first()
     if user is None:
         flash('Please Check your username', 'danger')
         return render_template('index.html')
-    if bcrypt.checkpw(password, user.password.encode('UTF-8')):
+    if bcrypt.checkpw(password.encode('UTF-8'), user.password.encode('UTF-8')):
         session['username'] = username
-        print("USER LOGGED IN")
-        #return render_template('home.html')
+        session['role'] = role
+        if role == 'Doctor':
+            return render_template('DocDash.html')
     else:
         flash('Username/Password is incorrect', 'danger')
         return render_template('index.html')
@@ -53,22 +75,32 @@ def login():
 @app.route('/signup', methods=['POST'])
 def signup():
     username = request.form.get('username')
-    password = request.form.get('password')
-    role = request.form.get('role')
+    password = request.form.get('password').encode('UTF-8')
+    role = "Doctor"#request.form.get('role')
+    firstname = request.form.get('firstname')
+    lastname = request.form.get('lastname')
+    dob = request.form.get('dob')
+    sex = request.form.get('sex')
+    bloodgroup = request.form.get('bloodgroup')
+    contactno = request.form.get('contactno')
+    city = request.form.get('city')
     user = User.query.filter_by(username=username, role=role).first()
     if user is not None:
         flash('User with same Username exists', 'danger')
-        return redirect('/signup')
+        return redirect('/')
     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(14)).decode('UTF-8')
-    user = User(username, hashed_password)
+    user_info = User_info(username, role, firstname, lastname, dob, sex, bloodgroup, contactno, city)
+    user = User(username, hashed_password, role)
+    print(user_info)
     db.session.add(user)
+    db.session.add(user_info)
     try:
         db.session.commit()
         flash('Registered Successfully', 'success')
-        return render_template('home.html', status='success')
+        return render_template('index.html', status='success')
     except IntegrityError:
         flash('Error in registration', 'danger')
-    return render_template('register_user.html')
+    return render_template('index.html')
 
 
 @app.route('/logout')
