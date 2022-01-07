@@ -30,7 +30,7 @@
   </nav>
   <!--BODY-->
   <!--CAROUSAL-->
-  <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
+  <div id="carouselInterval" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
       <div class="carousel-item active" data-interval="10000">
         <img src="../static/health.jpg" class="d-block w-100" alt="..." />
@@ -39,11 +39,11 @@
         <img src="../static/health2.jpg" class="d-block w-100" alt="..." />
       </div>
     </div>
-    <a class="carousel-control-prev" href="#carouselExampleInterval" role="button" data-slide="prev">
+    <a class="carousel-control-prev" href="#carouselInterval" role="button" data-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="sr-only">Previous</span>
     </a>
-    <a class="carousel-control-next" href="#carouselExampleInterval" role="button" data-slide="next">
+    <a class="carousel-control-next" href="#carouselInterval" role="button" data-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="sr-only">Next</span>
     </a>
@@ -61,8 +61,6 @@
         tristique senectus. Pharetra convallis posuere morbi leo urna molestie at elementum. Orci phasellus egestas
         tellus rutrum tellus. Consectetur libero id faucibus nisl. Fringilla urna porttitor rhoncus dolor purus non enim
         praesent elementum. Convallis aenean et tortor at risus viverra. Nisi porta lorem mollis aliquam ut porttitor.
-        Porttitor leo a diam sollicitudin tempor id. Sit amet mattis vulputate enim nulla aliquet porttitor lacus
-        luctus.
       </p>
       <!-- Button trigger modal -->
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#SignIn">
@@ -75,7 +73,7 @@
         <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="SignIn">Modal title</h5>
+              <h5 class="modal-title" id="SignIn">SIGN IN</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -83,12 +81,12 @@
             <div class="modal-body">
               <form>
                 <div class="form-group">
-                  <label for="exampleInputEmail1">Email address</label>
+                  <label class="form-inline" for="exampleInputEmail1">Email address</label>
                   <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
                     placeholder="Enter email" />
                 </div>
                 <div class="form-group">
-                  <label for="exampleInputPassword1">Password</label>
+                  <label class="form-inline" for="exampleInputPassword1">Password</label>
                   <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -109,7 +107,7 @@
         <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="SignUp">Modal title</h5>
+              <h5 class="modal-title" id="SignUp">SIGN UP</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -118,40 +116,35 @@
               <form>
                 <div class="form-row">
                   <div class="form-group col-md-6">
-                    <label for="inputFirstName">First Name</label>
+                    <label class="form-inline" for="inputFirstName">First Name</label>
                     <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" />
                   </div>
                   <div class="form-group col-md-6">
-                    <label for="inputLaseName">Last Name</label>
+                    <label class="form-inline" for="inputLaseName">Last Name</label>
                     <input type="text" class="form-control" id="inputLastName" placeholder="Last Name" />
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
+                    <label class="form-inline" for="inputEmail4">Email</label>
                     <input type="email" class="form-control" id="inputEmail4" placeholder="Email" />
                   </div>
                   <div class="form-group col-md-6">
-                    <label for="inputPassword4">Password</label>
+                    <label class="form-inline" for="inputPassword4">Password</label>
                     <input type="password" class="form-control" id="inputPassword4" placeholder="Password" />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="inputAddress">Address</label>
+                  <label class="form-inline" for="inputAddress">Address</label>
                   <input type="text" class="form-control" id="inputAddress" />
                 </div>
                 <div class="form-row">
                   <div class="form-group col-md-6">
-                    <label for="inputCity">City</label>
+                    <label class="form-inline" for="inputCity">City</label>
                     <input type="text" class="form-control" id="inputCity" />
                   </div>
                 </div>
-                <div class="form-row">
-                  <button type="submit" class="btn btn-primary">
-                    Sign Up
-                  </button>
-                </div>
-
+                <button type="submit" class="btn btn-primary">Submit</button>
               </form>
             </div>
           </div>
