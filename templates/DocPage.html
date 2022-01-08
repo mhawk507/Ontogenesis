@@ -106,7 +106,7 @@
                 e.preventDefault();
                 //creating list items
                 const myLi = document.createElement('li');
-                myLi.innerHTML = inputText.value;
+                myLi.innerHTML = inputText.value + "<input type='hidden' name='diagnosis' value='" + inputText.value + "'/>";
                 list.appendChild(myLi);
                 //creating span
                 const mySpan = document.createElement('span');
