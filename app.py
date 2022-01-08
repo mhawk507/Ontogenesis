@@ -118,6 +118,11 @@ def login():
         if role == 'Doctor':
             data = DocDash()
             return render_template('DocDash.html', data=data)
+        elif role == 'Pharmacist':
+            return render_template('PrescriptionPage.html')
+        elif role == 'Reception':
+            return render_template('AppointmentCase.html')
+
     else:
         flash('Username/Password is incorrect', 'danger')
         return render_template('index.html')
@@ -162,12 +167,22 @@ def logout():
     return redirect('/')
 
 
+@app.route('/appointment')
+def appointment():
+    return render_template('AppointmentCase.html')
+
+
+@app.route('/prescription', methods=['POST', 'GET'])
+def prescription():
+    if request.method == 'POST':
+        patient_id = request.form.get('patient_id')
+
+
 @app.route('/DocPage', methods=['POST', 'GET'])
 def DocPage():
     if request.method == 'GET' and session['role'] == 'Doctor':
         appointment_id = request.args.get('appointment_id')
         case_id = request.args.get('case_id')
-        print(appointment_id, case_id)
         session['appointment_id'] = appointment_id
         session['case_id'] = case_id
         return render_template('DocPage.html')
@@ -179,12 +194,13 @@ def DocPage():
         prescription = request.form.get('prescription')
         start_treatment = request.form.get('startoftreatment')
         end_treatment = request.form.get('endoftreatment')
-        diagnosis = request.form.get('diagnosis')
+        diagnosis = ' '.join(map(str, request.form.getlist('diagnosis')))
+        print(diagnosis)
         prescription_data = Prescription_info(
             prescription, prescription_id, start_treatment, end_treatment, diagnosis, notes, appointment_id)
         db.session.add(prescription_data)
         db.session.commit()
-        return render_template('DocPage.html')
+        return render_template('DocDash.html')
     else:
         return redirect('/')
 
