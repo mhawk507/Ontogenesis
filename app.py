@@ -22,6 +22,27 @@ class User(db.Model):
         self.role = role
 
 
+class Prescription_info(db.Model):
+    prescription_id = db.Column(
+        db.String(50), nullable=False, primary_key=True)
+    appointment_id = db.Column(db.String(15), db.ForeignKey(
+        'appointment_info.appointment_id'), unique=True, nullable=False)
+    prescription = db.Column(db.String(50), unique=True, nullable=False)
+    start_treatment = db.Column(db.Date(), nullable=False)
+    end_treatment = db.Column(db.Date(), nullable=False)
+    diagnosis = db.Column(db.String(15), nullable=False)
+    notes = db.Column(db.String(30), nullable=False)
+
+    def __init__(self, prescription, prescription_id, start_treatment, end_treatment, diagnosis, notes, appointment_id):
+        self.prescription = prescription
+        self.prescription_id = prescription_id
+        self.start_treatment = start_treatment
+        self.end_treatment = end_treatment
+        self.diagnosis = diagnosis
+        self.notes = notes
+        self.appointment_id = appointment_id
+
+
 class Appointment_info(db.Model):
     appointment_id = db.Column(
         db.String(50), unique=True, nullable=False, primary_key=True)
@@ -29,13 +50,11 @@ class Appointment_info(db.Model):
         'case_info.case_id'), unique=True, nullable=False)
     appointment_date = db.Column(db.Date(), nullable=False)
     appointment_time = db.Column(db.DateTime(), nullable=False)
-    prescription_id = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, appointment_id, case_id, appointment_date, appointment_time, prescription_id):
+    def __init__(self, appointment_id, case_id, appointment_date, appointment_time):
         self.appointment_time = appointment_time
         self.appointment_id = appointment_id
         self.appointment_date = appointment_date
-        self.prescription_id = prescription_id
         self.case_id = case_id
 
 
@@ -98,10 +117,12 @@ def login():
         session['role'] = role
         if role == 'Doctor':
             data = DocDash()
-            for row in data:
-                print(data[1])
-
             return render_template('DocDash.html', data=data)
+        elif role == 'Pharmacist':
+            return render_template('PrescriptionPage.html')
+        elif role == 'Reception':
+            return render_template('AppointmentCase.html')
+
     else:
         flash('Username/Password is incorrect', 'danger')
         return render_template('index.html')
@@ -146,21 +167,60 @@ def logout():
     return redirect('/')
 
 
+@app.route('/appointment')
+def appointment():
+    return render_template('AppointmentCase.html')
+
+
+@app.route('/prescription', methods=['POST', 'GET'])
+def prescription():
+    if request.method == 'POST':
+        patient_id = request.form.get('patient_id')
+
+
+@app.route('/DocPage', methods=['POST', 'GET'])
+def DocPage():
+    if request.method == 'GET' and session['role'] == 'Doctor':
+        appointment_id = request.args.get('appointment_id')
+        case_id = request.args.get('case_id')
+        session['appointment_id'] = appointment_id
+        session['case_id'] = case_id
+        return render_template('DocPage.html')
+    elif request.method == 'POST' and session['role'] == 'Doctor':
+        appointment_id = session['appointment_id']
+        case_id = session['case_id']
+        prescription_id = prescription_generator(appointment_id, case_id)
+        notes = request.form.get('notes')
+        prescription = request.form.get('prescription')
+        start_treatment = request.form.get('startoftreatment')
+        end_treatment = request.form.get('endoftreatment')
+        diagnosis = ' '.join(map(str, request.form.getlist('diagnosis')))
+        print(diagnosis)
+        prescription_data = Prescription_info(
+            prescription, prescription_id, start_treatment, end_treatment, diagnosis, notes, appointment_id)
+        db.session.add(prescription_data)
+        db.session.commit()
+        return render_template('DocDash.html')
+    else:
+        return redirect('/')
+
+
 def DocDash():
     doc_id = session['username']
-    #cases = Case_info.query(doctor_id=doc_id).all()
-    # cases = Case_info.query(doctor_id=doc_id).join(User_info, username=Case_info.patient_id).join(
-    #    Appointment_info, case_id=Case_info.case_id).with_entities(User_info.firstname, User_info.lastname,
-    #    Case_info.case_id, Case_info.patient_id).all()
     current_date = date.today()
     cases = db.session.execute(" SELECT * from appointment_info join (SELECT * from case_info join user_info on case_info.patient_id=user_info.username) AS A on appointment_info.case_id = A.case_id where appointment_date = '" +
                                str(current_date)+"' and doctor_id= '" + doc_id + "' order by appointment_time;")
-    """case_id = cases['case_id']
-    patient_id = cases['patient_id']
-    appointments = Appointment_info.query(Appointment_info.case_id in case_id, appointment_date=current_date).order_by(
-        Appointment_info.appointment_time).all()
-    user_details = User_info.query(User_info.username in patient_id).all()"""
     return cases
+
+
+def appointment_generator(case_id, appointment_date, appointment_time):
+    appointment_id = "V_"+case_id+str(appointment_date)+str(appointment_time)
+    return appointment_id
+
+
+def prescription_generator(appointment_id, case_id):
+    prescription_id = "P_"+case_id+appointment_id
+    return prescription_id
 
 
 if __name__ == '__main__':
