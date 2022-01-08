@@ -43,42 +43,19 @@
                 </tr>
             </thead>
             <tbody>
+                {% for user in data%}
                 <tr>
                     <th scope="row">001</th>
-                    <td>First Name Last Name</td>
-                    <td>STAUTS</td>
-                    <td><button type="button" class="btn btn-primary">View</button></td>
+                    <td>{{user.firstname}} {{user.lastname}}</td>
+                    <td>STATUS</td>
+                    <td>
+                        <form action='/DocPage' method="GET"><input type="hidden" name="appointment_id"
+                                value="{{user.appointment_id}}" /><input type="hidden" name="case_id"
+                                value="{{user.case_id}}"><input type="submit" class="btn btn-primary"></button>
+                        </form>
+                    </td>
                 </tr>
-                <tr>
-                    <th scope="row">001</th>
-                    <td>First Name Last Name</td>
-                    <td>STAUTS</td>
-                    <td><button type="button" class="btn btn-primary">View</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">001</th>
-                    <td>First Name Last Name</td>
-                    <td>STAUTS</td>
-                    <td><button type="button" class="btn btn-primary">View</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">001</th>
-                    <td>First Name Last Name</td>
-                    <td>STAUTS</td>
-                    <td><button type="button" class="btn btn-primary">View</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">001</th>
-                    <td>First Name Last Name</td>
-                    <td>STAUTS</td>
-                    <td><button type="button" class="btn btn-primary">View</button></td>
-                </tr>
-                <tr>
-                    <th scope="row">001</th>
-                    <td>First Name Last Name</td>
-                    <td>STAUTS</td>
-                    <td><button type="button" class="btn btn-primary">View</button></td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
