@@ -32,51 +32,51 @@
     </nav>
     <!--BODY-->
     <!-- Notes -->
-    <div class="title">Notes</div>
-    <div>
-        <div class="input-group mb-2">
-            <input type="text" class="form-control mt-3" placeholder="Search Keywords" aria-describedby="basic-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary mt-3" type="button">Search</button>
+    <form action='/DocPage' method="POST">
+        <div class="title">Notes</div>
+        <div>
+            <div class="input-group mb-2">
+                <input type="text" class="form-control mt-3" placeholder="Search Keywords"
+                    aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary mt-3" type="button">Search</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">NOTES</span>
+                </div>
+                <textarea rows="5" class="form-control" aria-label="With textarea" name="notes"></textarea>
             </div>
         </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">NOTES</span>
+        <!-- Diagnosis -->
+        <div class="title mt-3">Diagnosis</div>
+        <div class="table-wrapper-scroll-y my-custom-scrollbar">
+            <div class="input-group mb-3">
+                <input type="text" name="text" id="txt" class="form-control mt-3" placeholder="Enter Text"
+                    aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary mt-3" id="btn-lst" type="submit">Add</button>
+                </div>
             </div>
-            <textarea rows="5" class="form-control" aria-label="With textarea"></textarea>
-        </div>
-    </div>
-    <!-- Diagnosis -->
-    <div class="title mt-3">Diagnosis</div>
-    <div class="table-wrapper-scroll-y my-custom-scrollbar">
-        <div class="input-group mb-3">
-            <input type="text" name="text" id="txt" class="form-control mt-3" placeholder="Enter Text"
-                aria-describedby="basic-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary mt-3" id="btn-lst" type="submit">Add</button>
+            <div class="container">
+                <ul>
+                </ul>
             </div>
         </div>
-        <div class="container">
-            <ul>
-            </ul>
-        </div>
-    </div>
-    <!-- Prescription -->
-    <div>
-        <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target=".prescriptionmodal">Add
-            Presciption</button>
+        <!-- Prescription -->
+        <div>
+            <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target=".prescriptionmodal">Add
+                Presciption</button>
 
-        <div class="modal fade prescriptionmodal" tabindex="-1" role="dialog" aria-labelledby="prescriptionmodal"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content p-3">
-                    <form action="" method="post">
-
+            <div class="modal fade prescriptionmodal" tabindex="-1" role="dialog" aria-labelledby="prescriptionmodal"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content p-3">
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="startoftreatment">Start of Treatment</label>
-                                <input type="date" name="username" class="form-control" id="startoftreatment" />
+                                <input type="date" name="startoftreatment" class="form-control" id="startoftreatment" />
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="endoftreatment">End of Treatment</label>
@@ -86,15 +86,15 @@
                         <div class="form-group">
 
                             <label for="prescription">Example textarea</label>
-                            <textarea class="form-control" id="prescription" rows="10"></textarea>
+                            <textarea class="form-control" id="prescription" rows="10" name='prescription'></textarea>
 
                         </div>
 
                         <button type="submit" class="btn btn-primary align-self-center">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+    </form>
+    </div>
+    </div>
+    </div>
     </div>
 
     <script>
@@ -137,6 +137,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
+    </form>
 </body>
 
 </html>
