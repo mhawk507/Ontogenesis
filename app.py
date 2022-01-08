@@ -109,7 +109,7 @@ def home():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    role = "Pharmacist"  # "Reception"  # "Doctor"   # request.form.get('role')
+    role = request.form.get('role')
     user = User.query.filter_by(username=username, role=role).first()
     if user is None:
         flash('Please Check your username', 'danger')
@@ -118,8 +118,9 @@ def login():
         session['username'] = username
         session['role'] = role
         if role == 'Doctor':
-            data = DocDash()
-            return render_template('DocDash.html', data=data)
+            """data = DocDash_data()
+            return render_template('DocDash.html', data=data)"""
+            return redirect('/DocDash')
         elif role == 'Pharmacist':
             return render_template('PrescriptionPage.html')
         elif role == 'Reception':
@@ -133,7 +134,7 @@ def login():
 def signup():
     username = request.form.get('username')
     password = request.form.get('password').encode('UTF-8')
-    role = "Doctor"  # request.form.get('role')
+    role = request.form.get('role')
     firstname = request.form.get('firstname')
     lastname = request.form.get('lastname')
     dob = request.form.get('dob')
@@ -174,10 +175,13 @@ def appointment():
         patient_id = request.form.get('patientId')
         doc_id = request.form.get('docid')
         submit = request.form.get('submit')
-        if submit == 'add_appointment':
-            cases = Case_info.query.filter_by(
-                patient_id=patient_id, doctor_id=doc_id).all()
-            print(cases)
+        if submit == 'add_case':
+            case_id = case_id_generator(patient_id, doc_id)
+            new_case = Case_info(case_id, patient_id, doctor_id=doc_id)
+            db.session.add(new_case)
+            db.session.commit()
+        cases = Case_info.query.filter_by(
+            patient_id=patient_id, doctor_id=doc_id).all()
         return render_template('caseregistration.html', data=cases)
     else:
         return render_template('AppointmentCase.html')
@@ -205,7 +209,15 @@ def prescription():
         prescriptions = prescription_getter(patient_id)
         user = User_info.query.filter_by(username=patient_id).first()
         print(user.firstname, user.lastname)
-        return render_template('PrescriptionResult.html', prescripton_data=prescriptions, user=user)
+        return render_template('PrescriptionResult.html', prescription_data=prescriptions, user=user)
+    else:
+        return render_template('PrescriptionPage.html')
+
+
+@app.route('/DocDash', methods=['GET'])
+def DocDash():
+    data = DocDash_data()
+    return render_template("DocDash.html", data=data)
 
 
 @app.route('/DocPage', methods=['POST', 'GET'])
@@ -229,12 +241,19 @@ def DocPage():
             prescription, prescription_id, start_treatment, end_treatment, diagnosis, notes, appointment_id)
         db.session.add(prescription_data)
         db.session.commit()
-        return render_template('DocDash.html')
+        return redirect('/DocPage')
     else:
         return redirect('/')
 
 
-def DocDash():
+@app.route('/prescription/getDetails', methods=['POST'])
+def prescription_getDetails():
+    prescription_details = Prescription_info.query.filter_by(
+        prescription_id=request.get('prescription_id'))
+    return prescription_details
+
+
+def DocDash_data():
     doc_id = session['username']
     current_date = date.today()
     cases = db.session.execute(" SELECT * from appointment_info join (SELECT * from case_info join user_info on case_info.patient_id=user_info.username) AS A on appointment_info.case_id = A.case_id where appointment_date = '" +
@@ -247,13 +266,18 @@ def appointment_generator(case_id, appointment_date, appointment_time):
     return appointment_id
 
 
+def case_id_generator(patient_id, doctor_id):
+    case_id = "C_"+patient_id+doctor_id+str(date.today())
+    return case_id
+
+
 def prescription_generator(appointment_id, case_id):
     prescription_id = "P_"+case_id+appointment_id
     return prescription_id
 
 
 def prescription_getter(patient_id):
-    prescription = db.session.execute(" SELECT prescription_info.prescription_id from prescription_info join (SELECT * from case_info JOIN appointment_info ON case_info.case_id=appointment_info.case_id where case_info.patient_id = '" +
+    prescription = db.session.execute(" SELECT prescription_info.prescription_id,prescription_info.prescription,prescription_info.diagnosis,prescription_info.start_treatment,prescription_info.end_treatment from prescription_info join (SELECT * from case_info JOIN appointment_info ON case_info.case_id=appointment_info.case_id where case_info.patient_id = '" +
                                       patient_id + "') as A ON prescription_info.appointment_id = A.appointment_id")
     return prescription
 
