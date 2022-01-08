@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from sqlalchemy.exc import IntegrityError
 import enum
+
+from werkzeug import datastructures
 app = Flask(__name__)
 app.secret_key = "super secret key"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://xzhopgnzfqvvjm:07134b270fcbb63d1a6806b4827f546413ab403707ddb703130542f59260f6b8@ec2-34-232-191-133.compute-1.amazonaws.com:5432/dce6b26bnbtlp6'
@@ -107,7 +109,7 @@ def home():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    role = "Doctor"  # request.form.get('role')
+    role = "Pharmacist"  # "Doctor"  # request.form.get('role')
     user = User.query.filter_by(username=username, role=role).first()
     if user is None:
         flash('Please Check your username', 'danger')
@@ -122,7 +124,6 @@ def login():
             return render_template('PrescriptionPage.html')
         elif role == 'Reception':
             return render_template('AppointmentCase.html')
-
     else:
         flash('Username/Password is incorrect', 'danger')
         return render_template('index.html')
@@ -167,8 +168,33 @@ def logout():
     return redirect('/')
 
 
-@app.route('/appointment')
+@app.route('/appointment', methods=['POST', 'GET'])
 def appointment():
+    if request.method == 'POST':
+        patient_id = request.form.get('patientId')
+        doc_id = request.form.get('docid')
+        submit = request.form.get('submit')
+        if submit == 'add_appointment':
+            cases = Case_info.query.filter_by(
+                patient_id=patient_id, doctor_id=doc_id).all()
+            print(cases)
+        return render_template('caseregistration.html', data=cases)
+    else:
+        return render_template('AppointmentCase.html')
+
+
+@app.route('/appointment/create', methods=['POST'])
+def create_appointment():
+    case_id = request.form.get('case_id')
+    time = request.form.get('time')
+    date = request.form.get('date')
+    print(case_id, time, date)
+    appointment_id = appointment_generator(
+        case_id, appointment_date=date, appointment_time=time)
+    appointment = Appointment_info(
+        appointment_id, case_id, appointment_date=date, appointment_time=time)
+    db.session.add(appointment)
+    db.session.commit()
     return render_template('AppointmentCase.html')
 
 
@@ -176,6 +202,7 @@ def appointment():
 def prescription():
     if request.method == 'POST':
         patient_id = request.form.get('patient_id')
+        return render_template('PrescriptionResult.html', data=patient_id)
 
 
 @app.route('/DocPage', methods=['POST', 'GET'])
@@ -195,7 +222,6 @@ def DocPage():
         start_treatment = request.form.get('startoftreatment')
         end_treatment = request.form.get('endoftreatment')
         diagnosis = ' '.join(map(str, request.form.getlist('diagnosis')))
-        print(diagnosis)
         prescription_data = Prescription_info(
             prescription, prescription_id, start_treatment, end_treatment, diagnosis, notes, appointment_id)
         db.session.add(prescription_data)
