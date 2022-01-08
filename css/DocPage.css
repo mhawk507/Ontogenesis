@@ -1,0 +1,61 @@
+.my-custom-scrollbar {
+  position: relative;
+  height: 240px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+.title {
+  font-size: large;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: rgb(57, 116, 245);
+  color: aliceblue;
+  padding-left: 1%;
+  padding-bottom: 0.5%;
+  padding-top: 0.5%;
+}
+.container {
+  margin-left: 30%;
+}
+.container ul {
+  list-style: none;
+  width: 500px;
+}
+.container ul li {
+  width: 100%;
+  background-color: aliceblue;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 5px;
+  position: relative;
+  cursor: pointer;
+  display: block;
+  margin: 5px 0;
+  transition: 0.3s linear;
+}
+.container ul li span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  text-align: center;
+  background-color: rgb(52, 116, 236);
+  color: aliceblue;
+}
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-left: 20%;
+  }
+}
+@media screen and (max-width: 800px) {
+  .container {
+    margin-left: 10%;
+  }
+}
+@media screen and (max-width: 600px) {
+  .container {
+    margin-left: 1%;
+  }
+}
