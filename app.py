@@ -109,7 +109,7 @@ def home():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    role = "Pharmacist"  # "Doctor"  # request.form.get('role')
+    role = "Pharmacist"  # "Reception"  # "Doctor"   # request.form.get('role')
     user = User.query.filter_by(username=username, role=role).first()
     if user is None:
         flash('Please Check your username', 'danger')
@@ -202,7 +202,10 @@ def create_appointment():
 def prescription():
     if request.method == 'POST':
         patient_id = request.form.get('patient_id')
-        return render_template('PrescriptionResult.html', data=patient_id)
+        prescriptions = prescription_getter(patient_id)
+        user = User_info.query.filter_by(username=patient_id).first()
+        print(user.firstname, user.lastname)
+        return render_template('PrescriptionResult.html', prescripton_data=prescriptions, user=user)
 
 
 @app.route('/DocPage', methods=['POST', 'GET'])
@@ -247,6 +250,12 @@ def appointment_generator(case_id, appointment_date, appointment_time):
 def prescription_generator(appointment_id, case_id):
     prescription_id = "P_"+case_id+appointment_id
     return prescription_id
+
+
+def prescription_getter(patient_id):
+    prescription = db.session.execute(" SELECT prescription_info.prescription_id from prescription_info join (SELECT * from case_info JOIN appointment_info ON case_info.case_id=appointment_info.case_id where case_info.patient_id = '" +
+                                      patient_id + "') as A ON prescription_info.appointment_id = A.appointment_id")
+    return prescription
 
 
 if __name__ == '__main__':
