@@ -34,10 +34,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Dashboard <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/prescription">Dashboard <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Log Out</a>
+                    <a class="nav-link" href="/logout">Log Out</a>
                 </li>
         </div>
     </nav>
@@ -49,8 +49,8 @@
                     <label for="prescriptionid">Prescription ID</label>
                     <select id="prescriptionid" class="form-control">
                         <option selected>Select Prescription ID</option>
-                        {% for prescription in prescripton_data %}
-                        <option value="{{prescription}}"> {{prescription[0]}} </option>
+                        {% for prescription in prescription_data %}
+                        <option value="{{prescription}}"> {{prescription.prescription_id}} </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -71,24 +71,30 @@
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-text">Prescription</span>
-                        <textarea class="form-control" aria-label="With textarea" id="prescriptionDetails"></textarea>
+                        <textarea class="form-control" aria-label="With textarea"
+                            id="prescriptionDetails">{{prescription_data[0].prescription}}</textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-text">Diagnosis</span>
-                        <textarea class="form-control" aria-label="With textarea" id="diagnosisDetails"></textarea>
+                        <textarea class="form-control" aria-label="With textarea"
+                            id="diagnosisDetails">{{prescription_data[0].diagnosis}}</textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
                             <label for="startDate">Start Date</label>
-                            <input type="text" class="form-control" id="startDate" placeholder="Start Date">
+                            <input type="text" class="form-control" id="startDate"
+                                placeholder="{{prescription_data.start_treatment}}"
+                                value={{prescription_data[0].start_treatment}}>
                         </div>
                         <div class="col-md-6">
                             <label for="endDate">End Date</label>
-                            <input type="text" class="form-control" id="endDate" placeholder="End Date">
+                            <input type="text" class="form-control" id="endDate"
+                                placeholder="{{prescription_data.end_treatment}}"
+                                value={{prescription_data[0].end_treatment}}>
                         </div>
                     </div>
                 </div>
