@@ -49,20 +49,22 @@
                     <label for="prescriptionid">Prescription ID</label>
                     <select id="prescriptionid" class="form-control">
                         <option selected>Select Prescription ID</option>
-                        <option>option 1</option>
-                        <option>Option 2</option>
-                        <option>Option 3</option>
+                        {% for prescription in prescripton_data %}
+                        <option value="{{prescription}}"> {{prescription[0]}} </option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-6">
                             <label for="Fname">First Name</label>
-                            <input type="text" class="form-control" id="Fname" placeholder="First Name">
+                            <input type="text" class="form-control" id="Fname" placeholder="{{user.firstname}}"
+                                value="{{user.firstname}}">
                         </div>
                         <div class="col-md-6">
                             <label for="Lname">Last Name</label>
-                            <input type="text" class="form-control" id="Lname" placeholder="Last Name">
+                            <input type="text" class="form-control" id="Lname" placeholder="{{user.lastname}}"
+                                value="{{user.lastname}}">
                         </div>
                     </div>
                 </div>
