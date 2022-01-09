@@ -31,7 +31,7 @@
     </nav>
     <!--BODY-->
     <!-- table -->
-    <div class="title">Appointment Details</div>
+    <div class="title">Appointments</div>
     <div class="table-wrapper-scroll-y my-custom-scrollbar">
         <table class="table table-bordered table-striped mb-0">
             <thead class="thead-light">
@@ -49,10 +49,25 @@
                     <td>{{user.firstname}} {{user.lastname}}</td>
                     <td>{{user.status}}</td>
                     <td>
-                        <form action='/DocPage' method="GET"><input type="hidden" name="appointment_id"
-                                value="{{user.appointment_id}}" /><input type="hidden" name="case_id"
-                                value="{{user.case_id}}"><input type="submit" class="btn btn-primary"></button>
-                        </form>
+
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <form action='/DocPage' method="GET"><input type="hidden" name="appointment_id"
+                                        value="{{user.appointment_id}}" /><input type="hidden" name="case_id"
+                                        value="{{user.case_id}}"><input type="submit" class="btn btn-primary" />
+                                </form>
+                            </div>
+
+                            <div class="col-md-3">
+                                <!-- <form action="/getuserdetails" method="POST"> -->
+                                    <input type="hidden" value="{{user.username}}" name="username" />
+                                    <input onClick="myFunction()" type="submit" class="btn btn-primary" value="View Details" />
+                                <!-- </form> -->
+                            </div>
+
+                        </div>
+
                     </td>
                 </tr>
                 {% endfor %}
@@ -60,8 +75,8 @@
         </table>
     </div>
     <!-- Details -->
-    <div class="title">Appointment Details</div>
-    <div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <div class="title">Details of Appointment</div>
+    <div class="table-wrapper-scroll-y my-custom-scrollbar" id="detailsofappointment">
         <form action="#" method="#">
             <div class="form-row ml-auto">
                 <div class="form-group col-md-5">
@@ -125,6 +140,16 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+    <script>
+            function myFunction() {
+              var x = document.getElementById("detailsofappointment");
+              if (x.style.display === "block") {
+                x.style.display = "none";
+              } else {
+                x.style.display = "block";
+              }
+            }
+    </script>
 </body>
 
 </html>
