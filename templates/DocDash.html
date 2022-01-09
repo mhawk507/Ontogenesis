@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-    <title>Ontogenesis</title>
-    <link rel="stylesheet" href="../css/DocDash.css">
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/DocDash.css') }}">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
 </head>
 
 <body>
@@ -36,7 +38,7 @@
         <table class="table table-bordered table-striped mb-0">
             <thead class="thead-light">
                 <tr>
-                    <th scope="col">ID</th>
+                    <th scope="col">APPOINTMENT TIME</th>
                     <th scope="col">NAME</th>
                     <th scope="col">STATUS</th>
                     <th scope="col">ACTION</th>
@@ -45,25 +47,31 @@
             <tbody>
                 {% for user in data%}
                 <tr>
-                    <th scope="row">001</th>
+                    <th scope="row">{{user.appointment_time}}</th>
                     <td>{{user.firstname}} {{user.lastname}}</td>
-                    <td>STATUS</td>
+                    <td>{{user.status}}</td>
                     <td>
-
 
                         <div class="row">
                             <div class="col-md-3">
-                                <form action='/DocPage' method="GET"><input type="hidden" name="appointment_id"
-                                        value="{{user.appointment_id}}" /><input type="hidden" name="case_id"
-                                        value="{{user.case_id}}"><input type="submit" class="btn btn-primary" />
+                                <form action='/DocPage' method="GET">
+                                    <input type="hidden" name="appointment_id" value="{{user.appointment_id}}" />
+                                    <input type="hidden" name="case_id" value="{{user.case_id}}">
+                                    {% if user.status=='completed'%}
+                                    <input id="addFile" disabled type="submit" class="btn btn-primary"
+                                        value="Add File" />
+
+                                    {% else %}
+                                    <input id="addFile" type="submit" class="btn btn-primary" value="Add File" />
+                                    {% endif %}
                                 </form>
                             </div>
 
                             <div class="col-md-3">
-                                <!-- <form action="/getuserdetails" method="POST"> -->
-                                    <input type="hidden" value="{{user.username}}" name="username" />
-                                    <input onClick="myFunction()" type="submit" class="btn btn-primary" value="View Details" />
-                                <!-- </form> -->
+
+                                <input onClick="myFunction()" type="submit" class="btn btn-primary"
+                                    id="{{user.username}}" value="View Details" />
+
                             </div>
 
                         </div>
@@ -75,65 +83,67 @@
         </table>
     </div>
     <!-- Details -->
-    <div class="title">Details of Appointment</div>
-    <div class="table-wrapper-scroll-y my-custom-scrollbar" id="detailsofappointment">
+
+    <div class="title">Details of Appointment
+        <button id="hide" style="display:none" type="button" class="btn btn-danger" onclick="hide()">Hide
+            Details</button>
+    </div>
+
+    <div class="table-wrapper-scroll-y my-custom-scrollbar" id="detailsofappointment" style="display:none">
         <form action="#" method="#">
             <div class="form-row ml-auto">
                 <div class="form-group col-md-5">
                     <label for="First">First Name</label>
-                    <input type="text" name="first" class="form-control" id="First" />
+                    <input type="text" name="first" class="form-control" id="First" readonly />
                 </div>
                 <div class="form-group col-md-5">
                     <label for="Last">Last Name</label>
-                    <input type="text" name="last" class="form-control" id="Last" />
+                    <input type="text" name="last" class="form-control" id="Last" readonly />
                 </div>
             </div>
             <div class="form-row ml-auto">
                 <div class="form-group col-md-5">
                     <label for="DOB">Date of birth</label>
-                    <input type="text" name="DOB" class="form-control" id="DOB" />
+                    <input type="text" name="DOB" class="form-control" id="DOB" readonly />
                 </div>
                 <div class="form-group col-md-5">
                     <label for="age">Age</label>
-                    <input type="text" name="age" class="form-control" id="age" />
+                    <input type="text" name="age" class="form-control" id="age" readonly />
                 </div>
             </div>
             <div class="form-row ml-auto">
                 <div class="form-group col-md-5">
                     <label for="sex">Sex</label>
-                    <input type="text" name="sex" class="form-control" id="sex" />
+                    <input type="text" name="sex" class="form-control" id="sex" readonly />
                 </div>
                 <div class="form-group col-md-5">
                     <label for="blood">Blood Group</label>
-                    <input type="text" name="blood" class="form-control" id="blood" />
+                    <input type="text" name="blood" class="form-control" id="blood" readonly />
                 </div>
             </div>
             <div class="form-row ml-auto">
                 <div class="form-group col-md-5">
                     <label for="contact">Contact No</label>
-                    <input type="text" name="contact" class="form-control" id="contact" />
+                    <input type="text" name="contact" class="form-control" id="contact" readonly />
                 </div>
                 <div class="form-group col-md-5">
                     <label for="Econtact">Emergency Contact No</label>
-                    <input type="text" name="Econtact" class="form-control" id="Econtact" />
+                    <input type="text" name="Econtact" class="form-control" id="Econtact" readonly />
                 </div>
             </div>
             <div class="form-row ml-auto">
                 <div class="form-group col-md-5">
                     <label for="email">Email Id</label>
-                    <input type="text" name="email" class="form-control" id="email" />
+                    <input type="text" name="email" class="form-control" id="email" readonly />
                 </div>
                 <div class="form-group col-md-5">
                     <label for="city">City</label>
-                    <input type="text" name="city" class="form-control" id="city" />
+                    <input type="text" name="city" class="form-control" id="city" readonly />
                 </div>
             </div>
         </form>
     </div>
     <!-- bootstrap links -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
@@ -141,14 +151,42 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
     <script>
-            function myFunction() {
-              var x = document.getElementById("detailsofappointment");
-              if (x.style.display === "block") {
-                x.style.display = "none";
-              } else {
-                x.style.display = "block";
-              }
-            }
+        var x = document.getElementById("detailsofappointment");
+        function myFunction() {
+            let username = event.srcElement.id;
+            console.log(username);
+            x.style.display = "block"
+
+
+
+
+            $.post("/getuserdetails",
+                {
+                    "username": username
+                },
+                function (data, status) {
+
+                    const obj = JSON.parse(data);
+                    document.getElementById("First").value = obj.firstname;
+                    document.getElementById("Last").value = obj.lastname;
+                    document.getElementById("DOB").value = obj.dob;
+                    document.getElementById("age").value = obj.age;
+                    document.getElementById("sex").value = obj.sex;
+                    document.getElementById("blood").value = obj.bloodgroup;
+                    document.getElementById("contact").value = obj.contactno;
+                    document.getElementById("city").value = obj.city;
+
+
+                });
+
+            x.style.display = "block";
+            document.getElementById("hide").style.display = "inline-block";
+
+        }
+        function hide() {
+            x.style.display = 'none';
+            document.getElementById("hide").style.display = "none";
+        }
     </script>
 </body>
 

@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-    <title>Ontogenesis</title>
-    <link rel="stylesheet" href="../css/DocDash.css">
-
+    <title>Doctor Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/DocPage.css') }}">
+    <style>
+        #alertbox {
+            position: fixed;
+            z-index: 999;
+            margin-left: 40%;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,18 +37,23 @@
         </div>
     </nav>
     <!--BODY-->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div id="alertbox" class="alert alert-{{category}} alert-dismissible fade show ms-auto" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     <!-- Notes -->
     <form action='/DocPage' method="POST">
         <div class="title">Notes</div>
         <div>
-            <div class="input-group mb-2">
-                <input type="text" class="form-control mt-3" placeholder="Search Keywords"
-                    aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary mt-3" type="button">Search</button>
-                </div>
-            </div>
-            <div class="input-group">
+            <div class="input-group mt-2">
                 <div class="input-group-prepend">
                     <span class="input-group-text">NOTES</span>
                 </div>
@@ -50,7 +61,7 @@
             </div>
         </div>
         <!-- Diagnosis -->
-        <div class="title mt-1">Diagnosis</div>
+        <div class="title mt-1 mb-2">Diagnosis</div>
         <div class="table-wrapper-scroll-y my-custom-scrollbar">
             <div class="input-group mb-3">
                 <input type="text" name="text" id="txt" class="form-control mt-3" placeholder="Enter Text"
@@ -66,14 +77,13 @@
         </div>
         <!-- Prescription -->
         <div>
-            
-                <button type="button" class="btn btn-primary ml-2" data-toggle="modal"
-                    data-target=".prescriptionmodal">Add
-                    Presciption</button>
-            
-            
-                <button type="submit" class="btn btn-primary align-self-center">Submit</button>
-           
+
+            <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target=".prescriptionmodal">Add
+                Presciption</button>
+
+
+            <button type="submit" class="btn btn-primary align-self-center">Submit</button>
+
 
             <div class="modal fade prescriptionmodal" tabindex="-1" role="dialog" aria-labelledby="prescriptionmodal"
                 aria-hidden="true">
@@ -97,55 +107,51 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
-
-
-                         
                     </div>
                 </div>
             </div>
-        </div>
     </form>
-        <script>
-            const inputText = document.querySelector('#txt');
-            const myButton = document.querySelector('#btn-lst');
-            const list = document.querySelector('.container ul');
-            let count = 0;
-            myButton.addEventListener('click', (e) => {
-                if (inputText.value != "") {
-                    e.preventDefault();
-                    //creating list items
-                    const myLi = document.createElement('li');
-                    myLi.innerHTML = inputText.value + "<input type='hidden' name='diagnosis' value='" + inputText.value + "'/>";
-                    list.appendChild(myLi);
-                    //creating span
-                    const mySpan = document.createElement('span');
-                    mySpan.innerHTML = 'X';
-                    myLi.appendChild(mySpan);
-                }
-                const close = document.querySelectorAll('span');
-                for (let i = 0; i < close.length; i++) {
-                    close[i].addEventListener('click', () => {
-                        close[i].parentElement.style.opacity = 0;
-                        setTimeout(() => {
-                            close[i].parentElement.style.display = "none";
-                            close[i].parentElement.remove();
-                        }, 500);
-                    });
-                }
-                inputText.value = "";
-            });
+    <script>
+        const inputText = document.querySelector('#txt');
+        const myButton = document.querySelector('#btn-lst');
+        const list = document.querySelector('.container ul');
+        let count = 0;
+        myButton.addEventListener('click', (e) => {
+            if (inputText.value != "") {
+                e.preventDefault();
+                //creating list items
+                const myLi = document.createElement('li');
+                myLi.innerHTML = inputText.value + "<input type='hidden' name='diagnosis' value='" + inputText.value + "'/>";
+                list.appendChild(myLi);
+                //creating span
+                const mySpan = document.createElement('span');
+                mySpan.innerHTML = 'X';
+                myLi.appendChild(mySpan);
+            }
+            const close = document.querySelectorAll('span');
+            for (let i = 0; i < close.length; i++) {
+                close[i].addEventListener('click', () => {
+                    close[i].parentElement.style.opacity = 0;
+                    setTimeout(() => {
+                        close[i].parentElement.style.display = "none";
+                        close[i].parentElement.remove();
+                    }, 500);
+                });
+            }
+            inputText.value = "";
+        });
 
-        </script>
-        <!-- bootstrap links -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-            crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-            crossorigin="anonymous"></script>
+    </script>
+    <!-- bootstrap links -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 
     </form>
 </body>
