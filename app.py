@@ -52,12 +52,14 @@ class Appointment_info(db.Model):
         'case_info.case_id'), unique=True, nullable=False)
     appointment_date = db.Column(db.Date(), nullable=False)
     appointment_time = db.Column(db.DateTime(), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, appointment_id, case_id, appointment_date, appointment_time):
+    def __init__(self, appointment_id, case_id, appointment_date, appointment_time, status):
         self.appointment_time = appointment_time
         self.appointment_id = appointment_id
         self.appointment_date = appointment_date
         self.case_id = case_id
+        self.status = status
 
 
 class Case_info(db.Model):
@@ -192,11 +194,12 @@ def create_appointment():
     case_id = request.form.get('case_id')
     time = request.form.get('time')
     date = request.form.get('date')
+    status = "registered"
     print(case_id, time, date)
     appointment_id = appointment_generator(
         case_id, appointment_date=date, appointment_time=time)
     appointment = Appointment_info(
-        appointment_id, case_id, appointment_date=date, appointment_time=time)
+        appointment_id, case_id, appointment_date=date, appointment_time=time, status=status)
     db.session.add(appointment)
     db.session.commit()
     return render_template('AppointmentCase.html')
@@ -227,6 +230,10 @@ def DocPage():
         case_id = request.args.get('case_id')
         session['appointment_id'] = appointment_id
         session['case_id'] = case_id
+        appointment = Appointment_info.query.filter_by(
+            appointment_id=appointment_id).first()
+        appointment.status = "completed"
+        db.session.commit()
         return render_template('DocPage.html')
     elif request.method == 'POST' and session['role'] == 'Doctor':
         appointment_id = session['appointment_id']
@@ -249,8 +256,18 @@ def DocPage():
 @app.route('/prescription/getDetails', methods=['POST'])
 def prescription_getDetails():
     prescription_details = Prescription_info.query.filter_by(
-        prescription_id=request.get('prescription_id'))
+        prescription_id=request.form.get('prescription_id'))
+    print(prescription_details.column_descriptions)
     return prescription_details
+
+
+@app.route('/getuserdetails', methods=['POST'])
+def getuserdetails():
+    user_id = request.form.get('username')
+    user_data = User_info.query.filter_by(username=user_id).first()
+    data = {'firstname': user_data.firstname,
+            'lastname': user_data.lastname, 'dob': user_data.dob, 'sex': user_data.sex, 'bloodgroup': user_data.bloodgroup, 'contactno': user_data.contactno, 'city': user_data.city}
+    return data
 
 
 def DocDash_data():

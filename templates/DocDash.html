@@ -36,7 +36,7 @@
         <table class="table table-bordered table-striped mb-0">
             <thead class="thead-light">
                 <tr>
-                    <th scope="col">ID</th>
+                    <th scope="col">APPOINTMENT TIME</th>
                     <th scope="col">NAME</th>
                     <th scope="col">STATUS</th>
                     <th scope="col">ACTION</th>
@@ -45,9 +45,9 @@
             <tbody>
                 {% for user in data%}
                 <tr>
-                    <th scope="row">001</th>
+                    <th scope="row">{{user.appointment_time}}</th>
                     <td>{{user.firstname}} {{user.lastname}}</td>
-                    <td>STATUS</td>
+                    <td>{{user.status}}</td>
                     <td>
                         <form action='/DocPage' method="GET"><input type="hidden" name="appointment_id"
                                 value="{{user.appointment_id}}" /><input type="hidden" name="case_id"
