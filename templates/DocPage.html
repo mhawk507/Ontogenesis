@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-    <title>Ontogenesis</title>
-    <link rel="stylesheet" href="../css/DocDash.css">
-
+    <title>Doctor Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/DocPage.css') }}">
+    <style>
+        #alertbox {
+            position: fixed;
+            z-index: 999;
+            margin-left: 40%;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,18 +37,23 @@
         </div>
     </nav>
     <!--BODY-->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div id="alertbox" class="alert alert-{{category}} alert-dismissible fade show ms-auto" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     <!-- Notes -->
     <form action='/DocPage' method="POST">
         <div class="title">Notes</div>
         <div>
-            <div class="input-group mb-2">
-                <input type="text" class="form-control mt-3" placeholder="Search Keywords"
-                    aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary mt-3" type="button">Search</button>
-                </div>
-            </div>
-            <div class="input-group">
+            <div class="input-group mt-2">
                 <div class="input-group-prepend">
                     <span class="input-group-text">NOTES</span>
                 </div>
@@ -50,7 +61,7 @@
             </div>
         </div>
         <!-- Diagnosis -->
-        <div class="title mt-1">Diagnosis</div>
+        <div class="title mt-1 mb-2">Diagnosis</div>
         <div class="table-wrapper-scroll-y my-custom-scrollbar">
             <div class="input-group mb-3">
                 <input type="text" name="text" id="txt" class="form-control mt-3" placeholder="Enter Text"
@@ -95,13 +106,6 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
-
-
-
                         </div>
                     </div>
                 </div>

@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-    <title>Ontogenesis</title>
-    <link rel="stylesheet" href="../css/AppointmentCase.css">
-
+    <title>Appointment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/AppointmentCase.css') }}">
+    <style>
+        #alertbox {
+            position: fixed;
+            z-index: 999;
+            margin-left: 40%;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,6 +37,18 @@
         </div>
     </nav>
     <!--BODY-->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div id="alertbox" class="alert alert-{{category}} alert-dismissible fade show ms-auto" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     <div class="card card text-center">
         <div class="card-body mx-auto">
             <form action="/appointment" method="POST">

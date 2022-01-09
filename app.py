@@ -1,10 +1,11 @@
 from datetime import datetime, date
+import re
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from sqlalchemy.exc import IntegrityError
 import enum
-
+import json
 from werkzeug import datastructures
 app = Flask(__name__)
 app.secret_key = "super secret key"
@@ -95,14 +96,16 @@ class User_info(db.Model):
         self.bloodgroup = bloodgroup
         self.contactno = contactno
         self.city = city
-# @app.before_request
-# def require_login():
-#    allowed_route = ['login', 'register', 'static', '']
-#    if request.endpoint not in allowed_route and 'email' not in session:
-#        return redirect('/')
 
 
-@app.route('/')
+@app.before_request
+def require_login():
+    allowed_route = ['login', 'signup', 'static', 'home']
+    if request.endpoint not in allowed_route and 'username' not in session:
+        return redirect('/home')
+
+
+@app.route('/home')
 def home():
     return render_template('index.html')
 
@@ -114,7 +117,7 @@ def login():
     role = request.form.get('role')
     user = User.query.filter_by(username=username, role=role).first()
     if user is None:
-        flash('Please Check your username', 'danger')
+        flash('Please Check your Username/Role', 'danger')
         return render_template('index.html')
     if bcrypt.checkpw(password.encode('UTF-8'), user.password.encode('UTF-8')):
         session['username'] = username
@@ -153,7 +156,6 @@ def signup():
     user_info = User_info(username, role, firstname,
                           lastname, dob, sex, bloodgroup, contactno, city)
     user = User(username, hashed_password, role)
-    print(user_info)
     db.session.add(user)
     db.session.add(user_info)
     try:
@@ -176,15 +178,24 @@ def appointment():
     if request.method == 'POST':
         patient_id = request.form.get('patientId')
         doc_id = request.form.get('docid')
+
         submit = request.form.get('submit')
         if submit == 'add_case':
             case_id = case_id_generator(patient_id, doc_id)
             new_case = Case_info(case_id, patient_id, doctor_id=doc_id)
             db.session.add(new_case)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except IntegrityError:
+                flash('Error in creating Case', 'danger')
+                return redirect('/appointment')
         cases = Case_info.query.filter_by(
             patient_id=patient_id, doctor_id=doc_id).all()
-        return render_template('caseregistration.html', data=cases)
+        if len(cases) == 0:
+            flash("Please Check Patient ID / Doctor ID", "danger")
+            return render_template('AppointmentCase.html')
+        else:
+            return render_template('caseregistration.html', data=cases)
     else:
         return render_template('AppointmentCase.html')
 
@@ -195,14 +206,18 @@ def create_appointment():
     time = request.form.get('time')
     date = request.form.get('date')
     status = "registered"
-    print(case_id, time, date)
     appointment_id = appointment_generator(
         case_id, appointment_date=date, appointment_time=time)
     appointment = Appointment_info(
         appointment_id, case_id, appointment_date=date, appointment_time=time, status=status)
     db.session.add(appointment)
-    db.session.commit()
-    return render_template('AppointmentCase.html')
+    try:
+        db.session.commit()
+        flash('Appointment Created successfully', 'success')
+        return render_template('AppointmentCase.html')
+    except IntegrityError:
+        flash('Error in creating appointment', 'danger')
+        return redirect('/appointment')
 
 
 @app.route('/prescription', methods=['POST', 'GET'])
@@ -210,9 +225,12 @@ def prescription():
     if request.method == 'POST':
         patient_id = request.form.get('patient_id')
         prescriptions = prescription_getter(patient_id)
-        user = User_info.query.filter_by(username=patient_id).first()
-        print(user.firstname, user.lastname)
-        return render_template('PrescriptionResult.html', prescription_data=prescriptions, user=user)
+        if prescriptions is None:
+            flash("No prescription found", "danger")
+            return render_template('PrescriptionPage.html')
+        else:
+            user = User_info.query.filter_by(username=patient_id).first()
+            return render_template('PrescriptionResult.html', prescription_data=prescriptions, user=user)
     else:
         return render_template('PrescriptionPage.html')
 
@@ -233,8 +251,12 @@ def DocPage():
         appointment = Appointment_info.query.filter_by(
             appointment_id=appointment_id).first()
         appointment.status = "completed"
-        db.session.commit()
-        return render_template('DocPage.html')
+        try:
+            db.session.commit()
+            return render_template('DocPage.html')
+        except IntegrityError:
+            flash("Error in Creating prescription", 'danger')
+            return redirect('/DocDash')
     elif request.method == 'POST' and session['role'] == 'Doctor':
         appointment_id = session['appointment_id']
         case_id = session['case_id']
@@ -247,8 +269,13 @@ def DocPage():
         prescription_data = Prescription_info(
             prescription, prescription_id, start_treatment, end_treatment, diagnosis, notes, appointment_id)
         db.session.add(prescription_data)
-        db.session.commit()
-        return redirect('/DocPage')
+
+        try:
+            db.session.commit()
+            return redirect('/DocDash')
+        except IntegrityError:
+            flash("Error in Creating prescription", 'danger')
+            return redirect('/DocPage')
     else:
         return redirect('/')
 
@@ -256,18 +283,19 @@ def DocPage():
 @app.route('/prescription/getDetails', methods=['POST'])
 def prescription_getDetails():
     prescription_details = Prescription_info.query.filter_by(
-        prescription_id=request.form.get('prescription_id'))
-    print(prescription_details.column_descriptions)
-    return prescription_details
+        prescription_id=request.form.get('prescription_id')).first()
+    data = {'prescription': prescription_details.prescription, 'diagnosis': prescription_details.diagnosis, 'notes': prescription_details.notes,
+            'start_treatment': str(prescription_details.start_treatment), 'end_treatment': str(prescription_details.end_treatment)}
+    return json.dumps(data)
 
 
 @app.route('/getuserdetails', methods=['POST'])
 def getuserdetails():
     user_id = request.form.get('username')
     user_data = User_info.query.filter_by(username=user_id).first()
-    data = {'firstname': user_data.firstname,
-            'lastname': user_data.lastname, 'dob': user_data.dob, 'sex': user_data.sex, 'bloodgroup': user_data.bloodgroup, 'contactno': user_data.contactno, 'city': user_data.city}
-    return data
+    data = {'firstname': user_data.firstname, 'lastname': user_data.lastname, 'dob': user_data.dob,
+            'sex': user_data.sex, 'bloodgroup': user_data.bloodgroup, 'contactno': user_data.contactno, 'city': user_data.city}
+    return json.dumps(data)
 
 
 def DocDash_data():
@@ -294,9 +322,17 @@ def prescription_generator(appointment_id, case_id):
 
 
 def prescription_getter(patient_id):
-    prescription = db.session.execute(" SELECT prescription_info.prescription_id,prescription_info.prescription,prescription_info.diagnosis,prescription_info.start_treatment,prescription_info.end_treatment from prescription_info join (SELECT * from case_info JOIN appointment_info ON case_info.case_id=appointment_info.case_id where case_info.patient_id = '" +
+    prescription = db.session.execute(" SELECT prescription_info.prescription_id from prescription_info join (SELECT * from case_info JOIN appointment_info ON case_info.case_id=appointment_info.case_id where case_info.patient_id = '" +
                                       patient_id + "') as A ON prescription_info.appointment_id = A.appointment_id")
-    return prescription
+    prescription_ids = []
+    for row in prescription:
+        prescription_ids.append(row.prescription_id)
+    if len(prescription_ids) > 0:
+        prescription = Prescription_info.query.filter(
+            Prescription_info.prescription_id.in_(prescription_ids))
+        return prescription
+    else:
+        return None
 
 
 if __name__ == '__main__':
